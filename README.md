@@ -1,6 +1,6 @@
 # BISON LINUX
 
-Sistema base Arch. XFCE mínimo.
+Distro basada en Arch Linux, con Xfce.
 
 ## Qué es
 
@@ -50,6 +50,24 @@ base, linux, linux-firmware
 networkmanager, grub, efibootmgr si UEFI
 xorg, xfce4 mínimo.
 firefox
+
+## Capturas
+
+### 01 - Boot
+![Boot](docs/images/01-boot.png)
+
+### 02 - Login
+![Login](docs/images/02-login.png)
+
+### 03 - Escritorio
+![Escritorio](docs/images/03-escritorio.png)
+
+### 04 - Menú
+![Menú](docs/images/04-menu.png)
+
+### 05 - Thunar
+![Thunar](docs/images/05-thunar.png)
+
 
 Licencia
 GPL-3.0
