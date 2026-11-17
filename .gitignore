@@ -1,0 +1,9 @@
+compilaciones/
+reports/
+work/
+out/
+tmp/
+*.iso
+*.qcow2
+*.img
+__pycache__/

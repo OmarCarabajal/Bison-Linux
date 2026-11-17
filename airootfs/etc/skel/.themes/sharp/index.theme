@@ -1,0 +1,13 @@
+
+[Desktop Entry]
+Type=X-GNOME-Metatheme
+Name=UltimateMate
+Comment=UltimateMate theme
+Encoding=UTF-8
+
+Name[en]=UltimateMate
+
+[X-GNOME-Metatheme]
+GtkTheme=UltimateMate
+MetacityTheme=UltimateMate
+ButtonLayout=:minimize,maximize,close

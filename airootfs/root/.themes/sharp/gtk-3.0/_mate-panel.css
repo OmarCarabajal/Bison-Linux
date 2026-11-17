@@ -1,0 +1,169 @@
+/***************
+ * mate-panel *
+ ***************/
+
+/* first make all transparent */
+#PanelPlug,
+#PanelApplet button,
+PanelToplevel.background,
+#PanelApplet-window-menu-applet-button {
+    background-image: linear-gradient(to bottom, 
+                    #eae9e8, 
+                    #d4d2cf);
+}
+
+#PanelPlug,
+PanelToplevel > * {
+border-image: -gtk-scaled(url("assets/panel.png"),url("assets/panel@2.png")) 10 12 10 12 / 10px 12px 10px 12px stretch;
+box-shadow: none;
+border-color: transparent;
+}
+/* let's start it */
+#PanelPlug,
+PanelToplevel.background {
+    background-color: #142249;
+    /* normal panel */
+    /* transparent panel */
+/*    color: @theme_selected_fg_color; */
+    text-shadow: none;
+ box-shadow: none;
+ border-width: 0px;
+}
+
+.mate-panel-menu-bar,
+.mate-panel-menu-bar menubar,
+.mate-panel-menu-bar menuitem,
+.mate-panel-menu-bar {
+background-image: none;
+border-image: none;
+}
+
+/* workaround to avoid unwanted black frames if switching compositor on/off */
+.mate-panel-menu-bar .csd.popup decoration {
+}
+
+
+/* workaround to avoid unwanted black frames if switching compositor on/off */
+.mate-panel-menu-bar .window-frame.csd.popup {
+}
+
+#PanelApplet {
+    border-width: 1px;
+    box-shadow: inset 0 1px #a9aebd, inset 0 -1px #a9aebd;
+    border-color: #2b395e;
+  border-style: solid;
+background-color: #142249;
+}
+
+PanelSeparator {
+    border-width: 0;
+    background-image: none;
+    background-color:black;
+    text-shadow: none;
+    padding:0px;
+}
+
+/* all applets */
+.mate-panel-menu-bar #PanelApplet button,
+.mate-panel-menu-bar #PanelApplet button.flat,
+.mate-panel-menu-bar #PanelApplet button.toggle,
+.mate-panel-menu-bar #PanelApplet button.flat.toggle {
+   background-image: linear-gradient(to bottom, 
+                    #6096cd, 
+                    #005eb6 50%, 
+                    #004c92 50%,
+                    #0b4178);
+    
+    border-radius: 3px;
+    border-width: 1px;
+    box-shadow: inset 0 1px #9b9b9b, inset 0 -1px #9b9b9b, inset 1px 0 #9b9b9b, inset -1px 0 #9b9b9b;
+    border-color: #002143;
+    text-shadow: none;
+    color:white;
+}
+
+.mate-panel-menu-bar #PanelApplet button:checked,
+.mate-panel-menu-bar #PanelApplet button:checked:hover,
+.mate-panel-menu-bar #PanelApplet button:hover:active,
+.mate-panel-menu-bar #PanelApplet button.flat:checked,
+.mate-panel-menu-bar #PanelApplet button.flat:checked:hover,
+.mate-panel-menu-bar #PanelApplet button.flat:hover:active,
+.mate-panel-menu-bar #PanelApplet button.toggle:checked,
+.mate-panel-menu-bar #PanelApplet button.toggle:checked:hover,
+.mate-panel-menu-bar #PanelApplet button.toggle:hover:active,
+.mate-panel-menu-bar #PanelApplet button.flat.toggle:checked,
+.mate-panel-menu-bar #PanelApplet button.flat.toggle:checked:hover,
+.mate-panel-menu-bar #PanelApplet button.flat.toggle:hover:active {
+
+background-image: linear-gradient(to bottom, 
+                    #00539a, 
+                    #0b447f);
+    
+    border-radius: 0;
+    border-width: 1px;
+    box-shadow: inset 0 1px #9b9b9b, inset 0 -1px #9b9b9b, inset 1px 0 #9b9b9b, inset -1px 0 #9b9b9b;
+    border-color: #002143;
+    text-shadow: none;
+    color:white;
+}
+
+.mate-panel-menu-bar #PanelApplet button:hover,
+.mate-panel-menu-bar #PanelApplet button.flat:hover,
+.mate-panel-menu-bar #PanelApplet button.toggle:hover,
+.mate-panel-menu-bar #PanelApplet button.flat.toggle:hover {
+  background-image: linear-gradient(to bottom, 
+                   #8edeff, 
+                    #005eb6 50%, 
+                    #004c92 50%,
+                    #0b4178);
+    
+    border-radius: 0;
+    border-width: 1px;
+     box-shadow: inset 0 1px #9b9b9b, inset 0 -1px #9b9b9b, inset 1px 0 #9b9b9b, inset -1px 0 #9b9b9b;
+    border-color: #002143;
+    text-shadow: none;
+    color: white;
+
+}
+
+/* Classic icon style */
+.mate-panel-menu-bar {
+    -PanelMenuBar-icon-visible: true;
+    border: 1px solid #000;
+}
+
+na-tray-applet {
+    background-image: none;
+    background-color: transparent;
+    padding: 0;
+    text-shadow: none;
+    -NaTrayApplet-icon-padding: 3;
+    -NaTrayApplet-icon-size: 16;
+}
+
+/* volume applet, brightness applet */
+.mate-panel-applet-slider {
+    background: transparent;
+}
+
+.mate-panel-applet-slider .frame {
+    /*background-color: @theme_bg_color;*/
+    border-image: none;
+    border-style: solid;
+    border-radius:2px;
+    padding: 0px;
+    margin: 0px;
+}
+
+.mate-panel-applet-slider .frame .frame{
+    background-color:transparent;
+    border-style: none;
+    box-shadow: none;
+}
+
+.mate-panel-applet-slider .frame .button {
+   /* color: @theme_fg_color;*/
+}
+
+
+

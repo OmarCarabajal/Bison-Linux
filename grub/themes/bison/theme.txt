@@ -1,0 +1,17 @@
+title-text: ""
+desktop-image: "splash.png"
+desktop-color: "#000000"
+terminal-font: "Unifont Regular 16"
+
++ boot_menu {
+  left = 25%
+  width = 50%
+  top = 30%
+  height = 35%
+  item_font = "Unifont Regular 16"
+  item_color = "#cccccc"
+  selected_item_color = "#ffffff"
+  item_height = 28
+  item_padding = 10
+  item_spacing = 4
+}

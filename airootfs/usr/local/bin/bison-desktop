@@ -1,0 +1,9 @@
+#!/bin/bash
+# BISON Linux - Levantar escritorio XFCE desde el Live
+
+if pgrep -x xfce4-session >/dev/null 2>&1; then
+  exit 0
+fi
+
+# Levantar XFCE con dbus para que anden el panel, el sonido, etc.
+exec dbus-run-session startxfce4

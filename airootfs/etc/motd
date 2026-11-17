@@ -1,0 +1,12 @@
+Bison Linux - Based on Arch Linux
+Bienvenido a Bison Linux
+
+To install Bison Linux follow the installation guide:
+https://wiki.archlinux.org/title/Installation_guide
+
+For Wi-Fi, authenticate to the wireless network using the iwctl utility.
+For mobile broadband (WWAN) modems, connect with the mmcli utility.
+For Ethernet, WLAN and WWAN interfaces using DHCP, should work automatically.
+
+After connecting to the internet, the installation guide can be accessed
+via the convenience script Installation_guide.

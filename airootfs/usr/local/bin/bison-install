@@ -1,0 +1,94 @@
+#!/bin/bash
+# BISON Linux - Instalador
+# ordena el flujo
+# Retorno de cada paso: 0 = Ok (siguiente), 1 = Atras (anterior)
+
+LIB_DIR="/usr/local/lib/bison-install"
+
+source "$LIB_DIR/common.sh"
+source "$LIB_DIR/ui.sh"
+source "$LIB_DIR/disk.sh"
+source "$LIB_DIR/partition.sh"
+source "$LIB_DIR/partition-auto.sh"
+source "$LIB_DIR/partition-guided.sh"
+source "$LIB_DIR/partition-expert.sh"
+source "$LIB_DIR/install.sh"
+
+dmesg -n 1
+echo 0 > /proc/sys/kernel/printk 2>/dev/null || true
+clear
+
+verificar_root
+verificar_dialog
+
+# --- Paso 0: Bienvenida ---
+bienvenida
+check_cancel $?
+
+# PASO: 1 = teclado, 2 = disco, 3 = confirmar, 4 = modo, 5 = hostname
+# 6 = usuario, 7 = passwords, 8 = resumen, 9 = instalar
+
+PASO=1
+while true; do
+  case $PASO in
+    1)
+      preguntar_teclado
+      RC=$?
+      [ $RC -eq 0 ] && PASO=2
+      [ $RC -eq 1 ] && volver_al_menu
+      ;;
+    2)
+      elegir_disco
+      RC=$?
+      [ $RC -eq 0 ] && PASO=3
+      [ $RC -eq 1 ] && PASO=1
+      ;;
+    3)
+      confirmar_borrado
+      RC=$?
+      [ $RC -eq 0 ] && PASO=4
+      [ $RC -eq 1 ] && PASO=2
+      ;;
+    4)
+      elegir_modo_particionado
+      RC=$?
+      [ $RC -eq 0 ] && PASO=5
+      [ $RC -eq 1 ] && PASO=3
+      ;;
+    5)
+      preguntar_hostname
+      RC=$?
+      [ $RC -eq 0 ] && PASO=6
+      [ $RC -eq 1 ] && PASO=4
+      ;;
+    6)
+      preguntar_usuario
+      RC=$?
+      [ $RC -eq 0 ] && PASO=7
+      [ $RC -eq 1 ] && PASO=5
+      ;;
+    7)
+      preguntar_passwords
+      RC=$?
+      [ $RC -eq 0 ] && PASO=8
+      [ $RC -eq 1 ] && PASO=6
+      ;;
+    8)
+      resumen_final
+      RC=$?
+      [ $RC -eq 0 ] && PASO=9
+      [ $RC -eq 1 ] && PASO=7
+      ;;
+    9)
+      instalar_sistema
+      RC=$?
+      [ $RC -eq 1 ] && PASO=8
+      [ $RC -eq 0 ] && break
+      ;;
+    *)
+      volver_al_menu
+      ;;
+  esac
+done
+
+exit 0
