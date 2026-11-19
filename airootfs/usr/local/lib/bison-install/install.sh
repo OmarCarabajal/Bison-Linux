@@ -1,5 +1,17 @@
 #!/bin/bash
 # BISON - Instalación del sistema
+# Autor: Omar Carabajal
+# Fecha: 8/11/2026
+
+# Este programa es software libre: puedes redistribuirlo y/o modificarlo 
+# bajo los términos de la Licencia Pública General GNU (GPL) versión 3, 
+# o (a tu elección) cualquier versión posterior publicada por la 
+# Free Software Foundation.
+#
+# Este programa se distribuye SIN NINGUNA GARANTÍA. Para más detalles,
+# consulta el archivo LICENSE incluido en la raíz del proyecto o visita
+# <https://gnu.org>.
+
 
 instalar_sistema() {
   rm -f /tmp/bison-grub-failed /tmp/bison-install-grub.log /tmp/bison-pacstrap-failed /tmp/bison-verify-failed /tmp/bison-verify.log
@@ -214,7 +226,7 @@ instalar_sistema() {
     echo "nameserver 1.1.1.1" >> /mnt/etc/resolv.conf
 
     # instalar con pacstrap
-    echo "XXX"; echo 45; echo "\nInstalando sistema base con pacstrap..."; echo "XXX"
+    echo "XXX"; echo 45; echo "\n Instalando sistema base con pacstrap..."; echo "XXX"
     mapfile -t PKGS < <(grep -v "^#" /usr/share/bison/packages.x86_64 | grep -v "^$" | tr -d '\r')
     pacstrap -K /mnt "${PKGS[@]}" >/tmp/bison-pacstrap.log 2>&1
     PACSTRAP_RC=$?
@@ -235,6 +247,7 @@ instalar_sistema() {
     cp -a /usr/share/icons/SC_Cursors_Terran_Blue /mnt/usr/share/icons/ 2>/dev/null
     cp -a /usr/share/backgrounds/bison /mnt/usr/share/backgrounds/ 2>/dev/null
     cp -a /usr/share/bison-defaults/*.xml /mnt/usr/share/bison-defaults/ 2>/dev/null
+    cp -a /usr/share/themes/Bison /mnt/usr/share/themes/ 2>/dev/null
     mkdir -p /mnt/etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml/ /mnt/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/
     cp -a /usr/share/bison-defaults/*.xml /mnt/etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml/ 2>/dev/null
     cp -a /usr/share/bison-defaults/*.xml /mnt/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/ 2>/dev/null
@@ -244,7 +257,7 @@ instalar_sistema() {
 
     echo "XXX"; echo 70; echo "Generando fstab..."; echo "XXX"
     genfstab -U /mnt >> /mnt/etc/fstab
-    echo "XXX"; echo 80; echo "Configurando sistema..."; echo "XXX"
+    echo "XXX"; echo 80; echo "\n Configurando el sistema..."; echo "XXX"
     echo "$HOSTNAME" > /mnt/etc/hostname
     echo "127.0.0.1 localhost" > /mnt/etc/hosts
     echo "::1 localhost" >> /mnt/etc/hosts
@@ -409,7 +422,7 @@ OSRELEASE
   while true; do
     CONF_REBOOT=$(dialog --clear --title " ¡Listo! " --stdout \
       --ok-label "Ok" --cancel-label "Atrás" --extra-button --extra-label "Cancel" \
-      --no-tags --menu "¡Bison Linux instalado en $DISCO!\n\nAsegurate de extraer el medio antes de reiniciar." 14 70 2 \
+      --no-tags --menu "¡\nBison Linux instalado en $DISCO!\n\nAsegurate de extraer el medio antes de reiniciar." 12 70 2 \
       "reboot" "Reiniciar ahora" \
       "menu" "Volver al menú principal")
     RC=$?

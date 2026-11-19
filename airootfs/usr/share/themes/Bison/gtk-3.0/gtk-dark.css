@@ -1,0 +1,34 @@
+/* Archivo: gtk-dark.css
+   Autor: Omar Carabajal
+   Fecha: 19/11/2026
+   
+   css para la caja login
+   Este programa es software libre: puedes redistribuirlo y/o modificarlo 
+   bajo los términos de la Licencia Pública General GNU (GPL) versión 3, 
+   o (a tu elección) cualquier versión posterior publicada por la 
+   Free Software Foundation.
+  
+   Este programa se distribuye SIN NINGUNA GARANTÍA. Para más detalles,
+   consulta el archivo LICENSE incluido en la raíz del proyecto o visita
+   <https://gnu.org>. */
+
+window.background, #login_window {
+    background-color: transparent;
+    border: 1px solid #FFFFFF;
+    border-radius: 12px;
+}
+
+entry, entry:focus, #username_entry, #password_entry {
+    background-color: #FFFFFF;
+    color: #3F5064;
+    caret-color: #3F5064;
+    border: 1px solid #FFFFFF;
+    border-radius: 8px;
+}
+
+button, button.suggested-action, #login_button {
+    background-color: #FFFFFF;
+    color: #3F5064;
+    border: 1px solid #FFFFFF;
+    border-radius: 8px;
+}

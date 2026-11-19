@@ -1,21 +1,24 @@
 #!/usr/bin/env bash
 # BISON Live - modo prueba sin instalar
+# Autor: Omar Carabajal
+# Fecha: 9/11/2026
+
+# Este programa es software libre: puedes redistribuirlo y/o modificarlo 
+# bajo los términos de la Licencia Pública General GNU (GPL) versión 3, 
+# o (a tu elección) cualquier versión posterior publicada por la 
+# Free Software Foundation.
+#
+# Este programa se distribuye SIN NINGUNA GARANTÍA. Para más detalles,
+# consulta el archivo LICENSE incluido en la raíz del proyecto o visita
+# <https://gnu.org>.
+
+#!/usr/bin/env bash
+# BISON Live - modo prueba sin instalar
 
 clear
 
 systemctl start NetworkManager 2>/dev/null || true
 sleep 1
 
-unset DISPLAY
-
-# ir al escritorio
-bison-desktop
-
-# volver
-clear
-cat /etc/motd
-
-echo ""
-echo -e "Para instalar Bison: \e[1;36mbison-install\e[0m"
-echo -e "Probar live: \e[1;36mbison-live\e[0m"
-echo ""
+# Levantar el login, no el escritorio directo
+systemctl start lightdm 2>/dev/null || true
