@@ -1,5 +1,17 @@
 #!/bin/bash
-# Bootea el disco instalado.
+# Archivo: run-install.sh
+# Autor: Omar Carabajal
+# Fecha: 8/11/2026
+# Bootea el disco instalado (args: bios/uefi)
+
+# Este programa es software libre: puedes redistribuirlo y/o modificarlo 
+# bajo los términos de la Licencia Pública General GNU (GPL) versión 3, 
+# o (a tu elección) cualquier versión posterior publicada por la 
+# Free Software Foundation.
+#
+# Este programa se distribuye SIN NINGUNA GARANTÍA. Para más detalles,
+# consulta el archivo LICENSE incluido en la raíz del proyecto o visita
+# <https://gnu.org>.
 
 MODO=${1:-bios}
 DISK=./bison-test-disk.qcow2
