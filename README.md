@@ -32,10 +32,10 @@ Tres modos.
 1. Automático
 Crea:
 
-EFI - 512M - solo si elegís UEFI
-swap - opcional, tamaño a elección
-root - resto del disco
-home - opcional, tamaño a elección
+EFI  - 512M - solo si elegís UEFI  
+swap - opcional, tamaño a elección  
+root - resto del disco  
+home - opcional, tamaño a elección  
 
 2. Guiado
 Elegís el disco. Elegís tamaños.
@@ -45,11 +45,11 @@ EFI / swap / root / home
 3. Experto
 cfdisk directo. Particiona el usuario.
 
-Qué instala
-base, linux, linux-firmware
-networkmanager, grub, efibootmgr si UEFI
-xorg, xfce4 mínimo.
-firefox
+Qué instala  
+base, linux, linux-firmware  
+networkmanager, grub, efibootmgr si UEFI  
+xorg, xfce4 mínimo.  
+firefox  
 
 ## Capturas
 
@@ -69,11 +69,10 @@ firefox
 ![Thunar](docs/images/05-thunar.png)
 
 
-Licencia
-GPL-3.0
+Licencia GPL-3.0
 
 ---
 
-Omar Carabajal - Sector 0
-Daireaux, Argentina - Buenos Aires
+Omar Carabajal - Sector 0  
+Daireaux, Argentina - Buenos Aires  
 15 de Noviembre 2026
