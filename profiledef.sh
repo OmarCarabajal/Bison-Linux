@@ -22,5 +22,6 @@ file_permissions=(
   ["/usr/local/bin/Installation_guide"]="0:0:755"
   ["/usr/local/bin/bison-install"]="0:0:755"
   ["/usr/local/bin/bison-live"]="0:0:755"
-  ["/usr/local/bin/bison-desktop"]="0:0:755"
+  ["/usr/local/bin/bison-install-desktop"]="0:0:755"
+  ["/root/Desktop/bison-install.desktop"]="0:0:755"
 )

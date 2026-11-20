@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Instalar Bison
+Comment=Instalar Bison Linux en tu disco
+Exec=bison-install-desktop
+Icon=bison-install
+Terminal=true
+Categories=System;

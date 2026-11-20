@@ -1,7 +1,8 @@
 #!/bin/bash
-# BISON - Instalación del sistema
+# Archivo: install.sh
 # Autor: Omar Carabajal
 # Fecha: 8/11/2026
+# BISON - Instalación del sistema
 
 # Este programa es software libre: puedes redistribuirlo y/o modificarlo 
 # bajo los términos de la Licencia Pública General GNU (GPL) versión 3, 
@@ -286,7 +287,7 @@ instalar_sistema() {
       echo "exec startxfce4" > "/mnt/home/$USUARIO/.xinitrc"
       arch-chroot /mnt chown "$USUARIO:$USUARIO" "/home/$USUARIO/.xinitrc" 2>/dev/null
     fi
-    cat > /mnt/etc/os-release <<'OSRELEASE'
+cat > /mnt/etc/os-release <<'OSRELEASE'
 NAME="BISON Linux"
 PRETTY_NAME="BISON Linux 0.1"
 ID=bison
@@ -303,6 +304,7 @@ OSRELEASE
     echo "XXX"; echo 90; echo "Instalando bootloader..."; echo "XXX"
     GRUB_LOG="/tmp/bison-install-grub.log"
     : > "$GRUB_LOG"
+
     if [ -f /mnt/etc/default/grub ]; then
       sed -i 's/^GRUB_TERMINAL_INPUT=console/#GRUB_TERMINAL_INPUT=console/' /mnt/etc/default/grub
       sed -i 's/^GRUB_TERMINAL_OUTPUT=console/#GRUB_TERMINAL_OUTPUT=console/' /mnt/etc/default/grub

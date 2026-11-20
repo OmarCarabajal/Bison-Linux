@@ -11,6 +11,7 @@
 # Este programa se distribuye SIN NINGUNA GARANTÍA. Para más detalles,
 # consulta el archivo LICENSE incluido en la raíz del proyecto o visita
 # <https://gnu.org>.
+
 particionado_experto() {
   dialog --clear --title " Manual con cfdisk " --ok-label "Ok" --msgbox "Vas a entrar a cfdisk.\n\nCreá tus particiones a mano.\n\nCuando termines, salí de cfdisk con Write + Quit.\n\nDespués te voy a preguntar cuál es la raíz y cuál la EFI." 14 70
 
@@ -136,6 +137,30 @@ particionado_experto() {
     fi
     break
   done
+
+  # Resumen
+  local resumen_manual="Disco: $DISCO\n\n"
+  [ -n "$PART_EFI_MANUAL" ] && resumen_manual="${resumen_manual}efi  $PART_EFI_MANUAL\n"
+  resumen_manual="${resumen_manual}/  $PART_ROOT_MANUAL\n"
+  if [ -n "$PART_HOME_MANUAL" ]; then
+    resumen_manual="${resumen_manual}/home  $PART_HOME_MANUAL\n"
+  else
+    resumen_manual="${resumen_manual}home adentro de /\n"
+  fi
+  if [ -n "$PART_SWAP_MANUAL" ]; then
+    resumen_manual="${resumen_manual}swap  $PART_SWAP_MANUAL\n"
+  else
+    resumen_manual="${resumen_manual}sin swap\n"
+  fi
+
+  dialog --clear --title " Resumen " \
+    --ok-label "Ok" --cancel-label "Atrás" --extra-button --extra-label "Cancel" \
+    --yesno "${resumen_manual}\n¿Crear particiones con este esquema?" 14 60
+  RC=$?
+  check_cancel $RC
+  CC=$?
+  [ $CC -eq 1 ] && return 1
+  [ $CC -eq 2 ] && return 1
 
   MODO_PART="manual"
   return 0

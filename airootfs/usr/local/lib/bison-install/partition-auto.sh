@@ -67,5 +67,27 @@ particionado_auto() {
   else
     AUTO_SWAP_GB="0"
   fi
+
+    # Resumen 
+  local resumen_auto="Disco: $DISCO\n\n"
+  if [ "$MODO_FIRMWARE" = "uefi" ]; then
+    resumen_auto="${resumen_auto}efi  ${AUTO_EFI_MB}M\n"
+  fi
+  if [ "$AUTO_QUIERE_SWAP" = "si" ]; then
+    resumen_auto="${resumen_auto}swap ${AUTO_SWAP_GB}G\n"
+  else
+    resumen_auto="${resumen_auto}sin swap\n"
+  fi
+  resumen_auto="${resumen_auto}/ resto del disco\n"
+
+  dialog --clear --title " Resumen " \
+    --ok-label "Ok" --cancel-label "Atrás" --extra-button --extra-label "Cancel" \
+    --yesno "${resumen_auto}\n¿Crear particiones con este esquema?" 14 60
+  RC=$?
+  check_cancel $RC
+  CC=$?
+  [ $CC -eq 1 ] && return 1
+  [ $CC -eq 2 ] && return 1
+  
   return 0
 }

@@ -146,25 +146,29 @@ resumen_final() {
   RESUMEN="Resumen de la instalación:\n\n"
   RESUMEN+="Disco: $DISCO ($DISCO_SIZE)\n"
   RESUMEN+="Modo: $MODO_PART\n"
+
+  # Particiones que se van a crear
+RESUMEN+="Particiones:\n"
+if [ "$MODO_PART" = "guided" ]; then
+  [ -n "$GUIDED_EFI_MB" ] && [ "$GUIDED_EFI_MB" != "0" ] && RESUMEN+="  EFI: ${GUIDED_EFI_MB}M - vfat\n"
+  RESUMEN+="  ROOT: ${GUIDED_ROOT_GB}G - ext4 - /\n"
+  [ "$GUIDED_HOME_GB" != "0" ] && [ -n "$GUIDED_HOME_GB" ] && RESUMEN+="  HOME: ${GUIDED_HOME_GB}G - ext4 - /home\n"
+  [ "$GUIDED_SWAP_GB" != "0" ] && [ -n "$GUIDED_SWAP_GB" ] && RESUMEN+="  SWAP: ${GUIDED_SWAP_GB}G - swap\n"
+elif [ "$MODO_PART" = "auto" ]; then
+  [ -n "$AUTO_EFI_MB" ] && [ "$AUTO_EFI_MB" != "0" ] && RESUMEN+="  EFI: ${AUTO_EFI_MB}M - vfat\n"
+  [ "$AUTO_QUIERE_SWAP" = "si" ] && RESUMEN+="  SWAP: ${AUTO_SWAP_GB}G - swap\n"
+  RESUMEN+="  ROOT: resto del disco - ext4 - /\n"
+elif [ "$MODO_PART" = "manual" ]; then
+  [ -n "$PART_EFI_MANUAL" ] && RESUMEN+="  EFI: $PART_EFI_MANUAL - vfat\n"
+  RESUMEN+="  ROOT: $PART_ROOT_MANUAL - ext4 - /\n"
+  [ -n "$PART_HOME_MANUAL" ] && RESUMEN+="  HOME: $PART_HOME_MANUAL - ext4 - /home\n"
+  [ -n "$PART_SWAP_MANUAL" ] && RESUMEN+="  SWAP: $PART_SWAP_MANUAL - swap\n"
+fi
+  RESUMEN+="\n"
+
   RESUMEN+="Teclado: $KEYMAP\n"
   RESUMEN+="Hostname: $HOSTNAME\n"
   RESUMEN+="Usuario: $USUARIO\n\n"
   RESUMEN+="Se va a borrar todo $DISCO.\n\n"
   RESUMEN+="¿Instalar?"
-  while true; do
-    OPCION=$(dialog --clear --title " Resumen " --stdout \
-      --ok-label "Ok" --cancel-label "Atrás" --extra-button --extra-label "Cancel" \
-      --no-tags --menu "$RESUMEN" 18 70 2 \
-      "instalar" "Instalar ahora" \
-      "menu" "Volver al menú principal")
-    RC=$?
-    check_cancel $RC
-    CC=$?
-    [ $CC -eq 0 ] && break
-    [ $CC -eq 1 ] && return 1
-  done
-  if [ "$OPCION" = "menu" ]; then
-    volver_al_menu
-  fi
-  return 0
 }

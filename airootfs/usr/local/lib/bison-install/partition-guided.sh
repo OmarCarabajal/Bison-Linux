@@ -214,7 +214,7 @@ particionado_guiado() {
       fi
 
       # Confirmar esquema
-      dialog --clear --title " Resumen guided | Libre: $libre_txt " \
+      dialog --clear --title " Resumen guided " \
         --ok-label "Ok" --cancel-label "Atrás" --extra-button --extra-label "Cancel" \
         --yesno "${resumen}\n¿Crear particiones con este esquema?" 18 62
       RC=$?

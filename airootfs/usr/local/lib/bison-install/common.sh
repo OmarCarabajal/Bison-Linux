@@ -99,7 +99,7 @@ volver_al_menu() {
   fi
   swapoff -a 2>/dev/null || true
   clear
-  exec "$MENU_CMD"
+  exec /bin/zsh -i -l
 }
 
 # RC: 0=Ok, 1=Atras, 3=Cancel

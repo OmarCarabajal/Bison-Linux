@@ -1,11 +1,11 @@
 # BISON LINUX
 
-Distro basada en Arch Linux, con Xfce.
+Distro basada en Arch Linux con Xfce.
 
 ## Qué es
 
 - Base: Arch Linux
-- Entorno: XFCE mínimo
+- Entorno: XFCE mínimo.
 - Instalador: `bison-install` - TUI con `dialog`
 - Objetivo: sistema limpio, rápido.
 - Enfoque: programación
@@ -29,27 +29,22 @@ bison-install
 Particionamiento
 Tres modos.
 
-1. Automático
-Crea:
+Automático
 
-EFI  - 512M - solo si elegís UEFI  
-swap - opcional, tamaño a elección  
-root - resto del disco  
-home - opcional, tamaño a elección  
+- EFI/BIOS / swap / root / home
 
-2. Guiado
-Elegís el disco. Elegís tamaños.
+Guiado
 
-EFI / swap / root / home
+- EFI/BIOS / swap / root / home
 
-3. Experto
-cfdisk directo. Particiona el usuario.
+Experto
+
+- Con cfdisk
 
 Qué instala  
 base, linux, linux-firmware  
 networkmanager, grub, efibootmgr si UEFI  
-xorg, xfce4 mínimo.  
-firefox  
+xorg, xfce4, firefox.
 
 ## Capturas
 
