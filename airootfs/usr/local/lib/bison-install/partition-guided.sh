@@ -183,18 +183,18 @@ particionado_guiado() {
       local resumen="Disco: $DISCO - ${DISCO_GB}G\n\n"
       if [ "$MODO_FIRMWARE" = "uefi" ]; then
         resumen="${resumen}efi  ${TAM_EFI}M\n"
-        resumen="${resumen}/ ${TAM_ROOT}G\n"
+        resumen="${resumen}/ ${TAM_ROOT} G\n"
       else
-        resumen="${resumen}/ ${TAM_ROOT}G\n"
+        resumen="${resumen}/ ${TAM_ROOT} G\n"
       fi
 
       if [ "$TAM_HOME" != "0" ] && [ -n "$TAM_HOME" ]; then
-        resumen="${resumen}/home ${TAM_HOME}G\n"
+        resumen="${resumen}/home ${TAM_HOME} G\n"
       else
         resumen="${resumen}home adentro de /\n"
       fi
       if [ "$TAM_SWAP" != "0" ] && [ -n "$TAM_SWAP" ]; then
-        resumen="${resumen}swap ${TAM_SWAP}G\n"
+        resumen="${resumen}swap ${TAM_SWAP}  G\n"
       else
         resumen="${resumen}sin swap\n"
       fi

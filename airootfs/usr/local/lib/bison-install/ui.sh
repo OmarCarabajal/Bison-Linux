@@ -141,34 +141,50 @@ preguntar_passwords() {
   return 0
 }
 
+
+# Deja el resumen en $RESUMEN_PART
+construir_resumen_particiones() {
+  RESUMEN_PART=""
+  if [ "$MODO_PART" = "guided" ]; then
+    RESUMEN_PART="Disco: $DISCO\n"
+    [ -n "$GUIDED_EFI_MB" ] && [ "$GUIDED_EFI_MB" != "0" ] && RESUMEN_PART+="  EFI: ${GUIDED_EFI_MB}M - vfat\n"
+    RESUMEN_PART+="  ROOT: ${GUIDED_ROOT_GB}G - ext4 - /\n"
+    [ "$GUIDED_HOME_GB" != "0" ] && [ -n "$GUIDED_HOME_GB" ] && RESUMEN_PART+="  HOME: ${GUIDED_HOME_GB}G - ext4 - /home\n"
+    [ "$GUIDED_SWAP_GB" != "0" ] && [ -n "$GUIDED_SWAP_GB" ] && RESUMEN_PART+="  SWAP: ${GUIDED_SWAP_GB}G - swap\n"
+  elif [ "$MODO_PART" = "auto" ]; then
+    RESUMEN_PART="Disco: $DISCO\n"
+    [ -n "$AUTO_EFI_MB" ] && [ "$AUTO_EFI_MB" != "0" ] && RESUMEN_PART+="  EFI: ${AUTO_EFI_MB}M - vfat\n"
+    if [ "$AUTO_QUIERE_SWAP" = "si" ]; then
+      RESUMEN_PART+="  SWAP: ${AUTO_SWAP_GB}G - swap\n"
+    else
+      RESUMEN_PART+="  SWAP: sin swap\n"
+    fi
+    RESUMEN_PART+="  ROOT: resto del disco - ext4 - /\n"
+  elif [ "$MODO_PART" = "manual" ]; then
+    # En manual los valores están en el disco, los sacamos con lsblk, más fácil
+    RESUMEN_PART="Disco: $DISCO\n"
+    RESUMEN_PART+=$(lsblk -n -o NAME,SIZE,TYPE -l "$DISCO" 2>/dev/null | grep "part" | while read -r name size type; do
+      echo "  /dev/$name - $size"
+    done)
+    RESUMEN_PART+="\n"
+    [ -n "$PART_EFI_MANUAL" ] && RESUMEN_PART+="  EFI: $PART_EFI_MANUAL\n"
+    [ -n "$PART_ROOT_MANUAL" ] && RESUMEN_PART+="  ROOT: $PART_ROOT_MANUAL - /\n"
+    [ -n "$PART_HOME_MANUAL" ] && RESUMEN_PART+="  HOME: $PART_HOME_MANUAL - /home\n"
+    [ -n "$PART_SWAP_MANUAL" ] && RESUMEN_PART+="  SWAP: $PART_SWAP_MANUAL - swap\n"
+  fi
+}
+
 resumen_final() {
   local RESUMEN
   RESUMEN="Resumen de la instalación:\n\n"
   RESUMEN+="Disco: $DISCO ($DISCO_SIZE)\n"
   RESUMEN+="Modo: $MODO_PART\n"
-
-  # Particiones que se van a crear
-RESUMEN+="Particiones:\n"
-if [ "$MODO_PART" = "guided" ]; then
-  [ -n "$GUIDED_EFI_MB" ] && [ "$GUIDED_EFI_MB" != "0" ] && RESUMEN+="  EFI: ${GUIDED_EFI_MB}M - vfat\n"
-  RESUMEN+="  ROOT: ${GUIDED_ROOT_GB}G - ext4 - /\n"
-  [ "$GUIDED_HOME_GB" != "0" ] && [ -n "$GUIDED_HOME_GB" ] && RESUMEN+="  HOME: ${GUIDED_HOME_GB}G - ext4 - /home\n"
-  [ "$GUIDED_SWAP_GB" != "0" ] && [ -n "$GUIDED_SWAP_GB" ] && RESUMEN+="  SWAP: ${GUIDED_SWAP_GB}G - swap\n"
-elif [ "$MODO_PART" = "auto" ]; then
-  [ -n "$AUTO_EFI_MB" ] && [ "$AUTO_EFI_MB" != "0" ] && RESUMEN+="  EFI: ${AUTO_EFI_MB}M - vfat\n"
-  [ "$AUTO_QUIERE_SWAP" = "si" ] && RESUMEN+="  SWAP: ${AUTO_SWAP_GB}G - swap\n"
-  RESUMEN+="  ROOT: resto del disco - ext4 - /\n"
-elif [ "$MODO_PART" = "manual" ]; then
-  [ -n "$PART_EFI_MANUAL" ] && RESUMEN+="  EFI: $PART_EFI_MANUAL - vfat\n"
-  RESUMEN+="  ROOT: $PART_ROOT_MANUAL - ext4 - /\n"
-  [ -n "$PART_HOME_MANUAL" ] && RESUMEN+="  HOME: $PART_HOME_MANUAL - ext4 - /home\n"
-  [ -n "$PART_SWAP_MANUAL" ] && RESUMEN+="  SWAP: $PART_SWAP_MANUAL - swap\n"
-fi
-  RESUMEN+="\n"
-
+  construir_resumen_particiones
+  RESUMEN+="Particiones:\n$RESUMEN_PART\n"
   RESUMEN+="Teclado: $KEYMAP\n"
   RESUMEN+="Hostname: $HOSTNAME\n"
   RESUMEN+="Usuario: $USUARIO\n\n"
   RESUMEN+="Se va a borrar todo $DISCO.\n\n"
   RESUMEN+="¿Instalar?"
+  # ... el resto del dialog que ya tenés
 }

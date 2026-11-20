@@ -424,7 +424,7 @@ OSRELEASE
   while true; do
     CONF_REBOOT=$(dialog --clear --title " ¡Listo! " --stdout \
       --ok-label "Ok" --cancel-label "Atrás" --extra-button --extra-label "Cancel" \
-      --no-tags --menu "¡\nBison Linux instalado en $DISCO!\n\nAsegurate de extraer el medio antes de reiniciar." 12 70 2 \
+      --no-tags --menu "\n¡Bison Linux instalado en $DISCO!\n\nAsegurate de extraer el medio antes de reiniciar." 12 70 2 \
       "reboot" "Reiniciar ahora" \
       "menu" "Volver al menú principal")
     RC=$?

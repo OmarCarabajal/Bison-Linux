@@ -48,6 +48,42 @@ particionado_experto() {
     fi
   fi
 
+  # --- Chequeo BIOS / UEFI vs tabla ---
+  TIPO_TABLA=$(blkid -o value -s PTTYPE "$DISCO" 2>/dev/null)
+  TIENE_BIOS_BOOT=$(sfdisk -l "$DISCO" 2>/dev/null | grep -qi "BIOS boot" && echo "si" || echo "no")
+  TIENE_EFI=$(sfdisk -l "$DISCO" 2>/dev/null | grep -qi "EFI System" && echo "si" || echo "no")
+
+  if [ "$MODO_FIRMWARE" = "legacy" ] && echo "$TIPO_TABLA" | grep -qi "gpt" && [ "$TIENE_BIOS_BOOT" = "no" ]; then
+    while true; do
+      OPCION_BIOS=$(dialog --clear --title " Tabla incompatible " --stdout \
+        --ok-label "Ok" --cancel-label "Cancel" --extra-button --extra-label "Ayuda" \
+        --no-tags --menu "Elegiste una tabla incompatible para tu BIOS!\n\nBIOS (legacy) + GPT, necesita partición boot.\n\npara instalar GRUB." 16 70 3 \
+        "cfdisk" "Volver a cfdisk y crearla" \
+        "ayuda" "Ver ayuda" \
+        "cancel" "Cancelar instalación")
+      RC=$?
+      check_cancel $RC
+      CC=$?
+      if [ "$OPCION_BIOS" = "cfdisk" ]; then
+        clear
+        cfdisk "$DISCO"
+        partprobe "$DISCO" 2>/dev/null
+        sleep 1
+        # Volver a chequear
+        TIPO_TABLA=$(sfdisk -l "$DISCO" 2>/dev/null | grep -i "label:" | awk '{print $2}')
+        TIENE_BIOS_BOOT=$(sfdisk -l "$DISCO" 2>/dev/null | grep -qi "BIOS boot" && echo "si" || echo "no")
+        [ "$TIENE_BIOS_BOOT" = "si" ] && break
+        continue
+      fi
+      if [ "$OPCION_BIOS" = "ayuda" ]; then
+        dialog --clear --title " Ayuda BIOS + GPT " --ok-label "Volver" --msgbox "En BIOS + GPT necesitás:\n\n1M - Tipo: BIOS boot - Sin formato\nCódigo: EF02\n\nCreala en cfdisk antes de las otras particiones.\n\nEjemplo:\n- 1M BIOS boot\n- 2G swap\n- 20G /\n- resto /home" 16 70
+        continue
+      fi
+      # Cancel
+      return 1
+    done
+  fi
+
   # Sufijo para nvme / mmcblk: p1, p2... en SATA: 1, 2...
   SUF=""
   if [[ "$DISCO" == *"nvme"* || "$DISCO" == *"mmcblk"* ]]; then
@@ -139,29 +175,16 @@ particionado_experto() {
   done
 
   # Resumen
-  local resumen_manual="Disco: $DISCO\n\n"
-  [ -n "$PART_EFI_MANUAL" ] && resumen_manual="${resumen_manual}efi  $PART_EFI_MANUAL\n"
-  resumen_manual="${resumen_manual}/  $PART_ROOT_MANUAL\n"
-  if [ -n "$PART_HOME_MANUAL" ]; then
-    resumen_manual="${resumen_manual}/home  $PART_HOME_MANUAL\n"
-  else
-    resumen_manual="${resumen_manual}home adentro de /\n"
-  fi
-  if [ -n "$PART_SWAP_MANUAL" ]; then
-    resumen_manual="${resumen_manual}swap  $PART_SWAP_MANUAL\n"
-  else
-    resumen_manual="${resumen_manual}sin swap\n"
-  fi
-
+  MODO_PART="manual"
+  construir_resumen_particiones
   dialog --clear --title " Resumen " \
     --ok-label "Ok" --cancel-label "Atrás" --extra-button --extra-label "Cancel" \
-    --yesno "${resumen_manual}\n¿Crear particiones con este esquema?" 14 60
+    --yesno "${RESUMEN_PART}\n¿Crear particiones con este esquema?" 16 70
   RC=$?
   check_cancel $RC
   CC=$?
   [ $CC -eq 1 ] && return 1
   [ $CC -eq 2 ] && return 1
-
-  MODO_PART="manual"
+  
   return 0
 }
