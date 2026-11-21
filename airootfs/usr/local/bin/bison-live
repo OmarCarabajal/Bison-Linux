@@ -12,6 +12,31 @@
 # consulta el archivo LICENSE incluido en la raíz del proyecto o visita
 # <https://gnu.org>.
 
+# ==========================================
+# 1. DETECTAR Y MONTAR DISCOS DEL HOST
+# ==========================================
+BASE_MONT="/run/media/root"
+
+# desde donde corre el live?
+PART_LIVE=$(findmnt -n -o SOURCE /run/archiso/bootmnt 2>/dev/null)
+DISCO_LIVE=$(lsblk -no PKNAME "$PART_LIVE" 2>/dev/null)
+
+# Recorrer todos los discos físicos conectados
+lsblk -d -n -o NAME,TYPE | while read -r disco type; do
+	if [[ "$type" == "disk" && "$disco" != "$DISCO_LIVE" ]]; then
+		lsblk -n -o NAME,TYPE,FSTYPE -l "/dev/$disco" 2>/dev/null | while read -r part ptype fstype; do
+			if [[ "$ptype" == "part" && -n "$fstype" && "$fstype" != "swap" ]]; then
+				PUNTO="$BASE_MONT/$part"
+				mkdir -p "$PUNTO"
+				mount "/dev/$part" "$PUNTO" 2>/dev/null || rmdir "$PUNTO" 2>/dev/null
+			fi
+			done
+	fi
+	done
+
+# ==========================================
+# 2. DESBLOQUEAR ROOT Y LEVANTAR ENTORNO
+# ==========================================
 # Desbloquear root para autologin
 passwd -d root 2>/dev/null || true
 usermod -U root 2>/dev/null || true

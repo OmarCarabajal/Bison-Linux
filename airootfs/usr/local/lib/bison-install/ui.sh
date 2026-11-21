@@ -161,7 +161,6 @@ construir_resumen_particiones() {
     fi
     RESUMEN_PART+="  ROOT: resto del disco - ext4 - /\n"
   elif [ "$MODO_PART" = "manual" ]; then
-    # En manual los valores están en el disco, los sacamos con lsblk, más fácil
     RESUMEN_PART="Disco: $DISCO\n"
     RESUMEN_PART+=$(lsblk -n -o NAME,SIZE,TYPE -l "$DISCO" 2>/dev/null | grep "part" | while read -r name size type; do
       echo "  /dev/$name - $size"

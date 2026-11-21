@@ -172,3 +172,7 @@ pipewire
 pipewire-pulse
 wireplumber
 gnome-themes-extra
+ntfs-3g
+gvfs
+udisks2
+thunar-volman
