@@ -25,3 +25,7 @@ file_permissions=(
   ["/usr/local/bin/bison-install-desktop"]="0:0:755"
   ["/root/Desktop/bison-install.desktop"]="0:0:755"
 )
+
+services=(
+  "NetworkManager"
+)

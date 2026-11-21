@@ -25,6 +25,9 @@ if [ "$MODO" = "uefi" ]; then
     -drive file=/tmp/OVMF_VARS.fd,if=pflash,format=raw,unit=1 \
     -drive file=$DISK,if=virtio,format=qcow2 \
     -boot c \
+    -audiodev pa,id=snd0 \
+    -device intel-hda \
+    -device hda-output,audiodev=snd0 \
     -display gtk
 else
   qemu-system-x86_64 \
@@ -32,5 +35,8 @@ else
     -m 2048 \
     -drive file=$DISK,if=virtio,format=qcow2 \
     -boot c \
+    -audiodev pa,id=snd0 \
+    -device intel-hda \
+    -device hda-output,audiodev=snd0 \
     -display gtk
 fi

@@ -19,7 +19,7 @@ particionado_auto() {
     while true; do
       AUTO_EFI_MB=$(dialog --clear --title " Partición EFI " --stdout \
         --ok-label "Ok" --cancel-label "Atrás" --extra-button --extra-label "Cancel" \
-        --inputbox "Tamaño de la partición EFI en MB:\n\nRecomendado: 512" 12 60 "512")
+        --inputbox "Tamaño de la partición EFI en MB:\n\nRecomendado: 512 a 1024" 12 60 "512")
       RC=$?
       check_cancel $RC
       CC=$?

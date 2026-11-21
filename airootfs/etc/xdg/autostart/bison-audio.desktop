@@ -1,0 +1,22 @@
+# Archivo: bison-audio.desktop
+# Autor: Omar Carabajal
+# Fecha: 20/11/2026
+# ejecuta el bison-live-audio.sh en autostart
+
+# Este programa es software libre: puedes redistribuirlo y/o modificarlo 
+# bajo los términos de la Licencia Pública General GNU (GPL) versión 3, 
+# o (a tu elección) cualquier versión posterior publicada por la 
+# Free Software Foundation.
+#
+# Este programa se distribuye SIN NINGUNA GARANTÍA. Para más detalles,
+# consulta el archivo LICENSE incluido en la raíz del proyecto o visita
+# <https://gnu.org>.
+
+[Desktop Entry]
+Type=Application
+Name=Bison Audio
+Comment=Arranca PipeWire en live como root
+Exec=/usr/local/bin/bison-live-audio.sh
+OnlyShowIn=XFCE;
+NoDisplay=true
+X-GNOME-Autostart-enabled=true

@@ -1,9 +1,6 @@
 #!/bin/bash
 # Instalar desde el escritorio: salir de X y pasar al instalador en tty1
 
-#!/bin/bash
-# Instalar desde el escritorio: matar el desktop, saltar a zsh y ejecutar bison-install
-
 # setsid = despegarme de la terminal de XFCE, si no muero con lightdm
 #setsid bash -c '
 #  sleep 1
