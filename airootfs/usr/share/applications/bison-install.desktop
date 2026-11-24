@@ -1,8 +1,23 @@
+# Archivo: bison-install.desktop
+# Autor: Omar Carabajal
+# Fecha: 20/11/2026
+# lanzador de escritorio
+
+# Este programa es software libre: puedes redistribuirlo y/o modificarlo 
+# bajo los términos de la Licencia Pública General GNU (GPL) versión 3, 
+# o (a tu elección) cualquier versión posterior publicada por la 
+# Free Software Foundation.
+#
+# Este programa se distribuye SIN NINGUNA GARANTÍA. Para más detalles,
+# consulta el archivo LICENSE incluido en la raíz del proyecto o visita
+# <https://gnu.org>.
+
 [Desktop Entry]
+Path=/root
 Type=Application
 Name=Instalar Bison
 Comment=Instalar Bison Linux en tu disco
-Exec=bison-install-desktop
+Exec=xfce4-terminal --maximize -e "bash -c 'cd /root; sudo bison-install'"
 Icon=bison-install
-Terminal=true
+Terminal=false
 Categories=System;

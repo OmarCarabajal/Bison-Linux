@@ -17,7 +17,7 @@ elegir_modo_particionado() {
   while true; do
     MODO_PART=$(dialog --clear --title " Particionado " --stdout \
       --ok-label "Ok" --cancel-label "Atrás" --extra-button --extra-label "Cancel" \
-      --no-tags --menu "¿Cómo querés particionar $DISCO?\n\nUsá ↑ ↓ para moverte, Enter para elegir." 16 70 3 \
+      --no-tags --menu " ¿Cómo querés particionar $DISCO?\n\n Usá ↑ ↓ para moverte, Enter para elegir." 16 70 3 \
       "auto" "Automático - Borra todo y particiona solo" \
       "guided" "Guiado - Elegís particiones, sin cfdisk" \
       "manual" "Manual - Con cfdisk, para expertos")

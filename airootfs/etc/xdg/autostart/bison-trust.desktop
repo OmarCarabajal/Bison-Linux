@@ -1,0 +1,21 @@
+# Archivo: bison-trust.desktop
+# Autor: Omar Carabajal
+# Fecha: 23/11/2026
+# pone la marca trust en el lanzador de instalación dekstop live
+# después se autodetruye
+
+# Este programa es software libre: puedes redistribuirlo y/o modificarlo 
+# bajo los términos de la Licencia Pública General GNU (GPL) versión 3, 
+# o (a tu elección) cualquier versión posterior publicada por la 
+# Free Software Foundation.
+#
+# Este programa se distribuye SIN NINGUNA GARANTÍA. Para más detalles,
+# consulta el archivo LICEN
+
+[Desktop Entry]
+Type=Application
+Name=Bison Trust Installer
+Exec=sh -c "gio set /root/Desktop/bison-install.desktop metadata::xfce-exe-checksum $(sha256sum /root/Desktop/bison-install.desktop | cut -d' ' -f1) 2>/dev/null; gio set /root/Desktop/bison-install.desktop metadata::trusted true 2>/dev/null; rm -f /etc/xdg/autostart/bison-trust.desktop"
+Terminal=false
+NoDisplay=true
+X-GNOME-Autostart-enabled=true

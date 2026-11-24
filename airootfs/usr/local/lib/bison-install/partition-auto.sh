@@ -19,7 +19,7 @@ particionado_auto() {
     while true; do
       AUTO_EFI_MB=$(dialog --clear --title " Partición EFI " --stdout \
         --ok-label "Ok" --cancel-label "Atrás" --extra-button --extra-label "Cancel" \
-        --inputbox "Tamaño de la partición EFI en MB:\n\nRecomendado: 512 a 1024" 12 60 "512")
+        --inputbox "Tamaño de la partición EFI en MB:\n\nRecomendado: 512" 12 60 "512")
       RC=$?
       check_cancel $RC
       CC=$?
@@ -38,7 +38,7 @@ particionado_auto() {
   while true; do
     AUTO_QUIERE_SWAP=$(dialog --clear --title " Swap " --stdout \
       --ok-label "Ok" --cancel-label "Atrás" --extra-button --extra-label "Cancel" \
-      --no-tags --menu "¿Querés partición SWAP?\n\nLa SWAP sirve cuando te quedás sin RAM." 14 70 2 \
+      --no-tags --menu "¿Querés partición SWAP?\n\n La SWAP sirve cuando te quedás sin RAM." 14 70 2 \
       "si" "Sí, crear SWAP" \
       "no" "No, sin SWAP")
     RC=$?
@@ -79,6 +79,5 @@ particionado_auto() {
   CC=$?
   [ $CC -eq 1 ] && return 1
   [ $CC -eq 2 ] && return 1
-  
   return 0
 }

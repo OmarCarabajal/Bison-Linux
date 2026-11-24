@@ -1,5 +1,5 @@
 #!/bin/bash
-# BISON - Particionado guiado
+# Particionado guiado
 # Autor: Omar Carabajal
 # Fecha: 13/11/2026
 
@@ -15,11 +15,15 @@
 
 particionado_guiado() {
   local TAM_EFI="512"
+  # En BIOS no hay EFI, dejar en 0
+  if [ "$MODO_FIRMWARE" != "uefi" ]; then
+    TAM_EFI="0"
+  fi
   local TAM_ROOT=""
   local TAM_HOME=""
   local TAM_SWAP=""
 
-  # --- Tamaño del disco en MB ---
+  # Tamaño del disco en MB
   # DISCO viene de disk.sh
   local DISCO_BYTES
   DISCO_BYTES=$(lsblk -b -d -o SIZE -n "$DISCO" 2>/dev/null | tr -d ' ')
@@ -29,7 +33,7 @@ particionado_guiado() {
   local DISCO_GB=$((DISCO_MB / 1024))
   [ "$DISCO_GB" -eq 0 ] && DISCO_GB=0
 
-  # --- Helper: calcula libre en MB según lo ya elegido ---
+  # helper: calcula libre en MB según lo ya elegido ---
   # variables globales temporales: _EFI_MB _ROOT_MB _HOME_MB _SWAP_MB
   _calc_libre() {
     local usado=0
@@ -50,7 +54,6 @@ particionado_guiado() {
     echo "${gb}.${resto}G"
   }
 
-  # --- Flujo por pasos, con Atrás = paso anterior ---
   # paso 0=EFI (solo UEFI), 1=ROOT, 2=HOME, 3=SWAP, 4=Resumen/Validar
   local paso=0
   if [ "$MODO_FIRMWARE" != "uefi" ]; then
@@ -115,7 +118,7 @@ particionado_guiado() {
       continue
     fi
 
-    # ---- Paso HOME ----
+    # Paso HOME
     if [ "$paso" -eq 2 ]; then
       local tmp_home="$TAM_HOME"
       TAM_HOME=""
@@ -142,7 +145,7 @@ particionado_guiado() {
       continue
     fi
 
-    # ---- Paso SWAP ----
+    # Paso SWAP
     if [ "$paso" -eq 3 ]; then
       local tmp_swap="$TAM_SWAP"
       TAM_SWAP=""
@@ -169,7 +172,7 @@ particionado_guiado() {
       continue
     fi
 
-    # ---- Paso 4: Resumen + Validación LIBRE >= 1G ----
+    # Paso 4: Resumen + Validación LIBRE >= 1G 
     if [ "$paso" -eq 4 ]; then
       local libre_mb
       libre_mb=$(_calc_libre)
@@ -200,7 +203,7 @@ particionado_guiado() {
       fi
       resumen="${resumen}\nUsado: $usado_txt\nLibre: $libre_txt\n"
 
-      # Validación: hay que dejar al menos 1G libre
+      # dejar al menos 1G libre
       if [ "$libre_mb" -lt 1024 ]; then
         dialog --clear --title " Error: Sin espacio libre " --ok-label "Ok" --cancel-label "Atrás" --extra-button --extra-label "Cancel" \
           --msgbox "Te pasaste del disco.\n\n${resumen}\nTenés que dejar al menos 1G libre para tabla y alineación.\n\nBajá HOME o ROOT.\n\n<Atrás> para corregir." 18 62
@@ -214,7 +217,7 @@ particionado_guiado() {
       fi
 
       # Confirmar esquema
-      dialog --clear --title " Resumen guided " \
+      dialog --clear --title " Resumen " \
         --ok-label "Ok" --cancel-label "Atrás" --extra-button --extra-label "Cancel" \
         --yesno "${resumen}\n¿Crear particiones con este esquema?" 18 62
       RC=$?
@@ -227,7 +230,11 @@ particionado_guiado() {
     fi
   done
 
-  GUIDED_EFI_MB="$TAM_EFI"
+  if [ "$MODO_FIRMWARE" = "uefi" ]; then
+    GUIDED_EFI_MB="$TAM_EFI"
+  else
+    GUIDED_EFI_MB="0"
+  fi
   GUIDED_ROOT_GB="$TAM_ROOT"
   GUIDED_HOME_GB="$TAM_HOME"
   GUIDED_SWAP_GB="$TAM_SWAP"

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # BISON profile
 
-iso_name="bison"
+iso_name="bison-linux-xfce"
 iso_label="BISON_202611"
 iso_publisher="BISON Linux <https://bisonlinux.org>"
 iso_application_id="BISON Linux Live/Install"
@@ -22,8 +22,9 @@ file_permissions=(
   ["/usr/local/bin/Installation_guide"]="0:0:755"
   ["/usr/local/bin/bison-install"]="0:0:755"
   ["/usr/local/bin/bison-live"]="0:0:755"
-  ["/usr/local/bin/bison-install-desktop"]="0:0:755"
   ["/root/Desktop/bison-install.desktop"]="0:0:755"
+  ["/etc/xdg/autostart/bison-audio.desktop"]="0:0:644"
+  ["/usr/local/bin/bison-live-audio.sh"]="0:0:755"
 )
 
 services=(

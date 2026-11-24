@@ -40,7 +40,7 @@ elegir_disco() {
     [ $CC -eq 0 ] && break
     [ $CC -eq 1 ] && return 1
   done
-  # Guardamos el tamaño total para mostrarlo en confirmar y resumen
+  # guardar el tamaño total para mostrarlo en confirmar y resumen
   DISCO_SIZE=$(lsblk -d -n -o SIZE "$DISCO" 2>/dev/null | tr -d ' ')
   return 0
 }

@@ -1,3 +1,4 @@
+
 #!/bin/bash
 # Archivo: install.sh
 # Autor: Omar Carabajal
@@ -19,14 +20,50 @@ instalar_sistema() {
 
   # Detección de red
   if ! ping -c 1 -W 7 8.8.8.8 &>/dev/null || ! getent hosts archlinux.org >/dev/null 2>&1; then
-    dialog --clear --title " Sin red " --yesno "No hay conexión a internet.\n\n" 10 70
+    dialog --clear --title " Sin red " --yesno "\nNo hay conexión a internet.\n\n¿Querés conectarte ahora?\n\n" 10 70
     if [ $? -eq 0 ]; then
       systemctl start NetworkManager 2>/dev/null || true
       sleep 2
-      nmtui
-      sleep 5
+      # Si hay escritorio, mandar al applet de la barra
+      if [ -n "$DISPLAY" ]; then
+        dialog --clear --title " Sin red " --msgbox "\nConectate desde el applet de la barra izquierda\n\n" 6 70
+      else
+        # Sin escritorio nmcli + dialog
+        nmcli device wifi rescan 2>/dev/null || true
+        sleep 3
+        WIFI_LIST=$(nmcli -t -f SSID device wifi list 2>/dev/null | grep -v "^--" | grep -v "^$" | sort -u | head -n 15)
+        if [ -z "$WIFI_LIST" ]; then
+          dialog --clear --title " Sin red " --msgbox "\nNo se encontraron redes WiFi.\n\nConectá el cable o revisá el WiFi." 8 60
+        else
+          MENU_ARGS=()
+          i=1
+          # Leer SSID con espacios
+          echo "$WIFI_LIST" | while IFS= read -r ssid; do
+            [ -z "$ssid" ] && continue
+            echo "$ssid"
+          done > /tmp/bison-wifi-list.txt
+          # Armar menú
+          MENU_ARGS=()
+          idx=1
+          while IFS= read -r ssid; do
+            [ -z "$ssid" ] && continue
+            MENU_ARGS+=("$idx" "$ssid")
+            idx=$((idx+1))
+          done < /tmp/bison-wifi-list.txt
+          CHOICE=$(dialog --clear --title " Elegí WiFi " --stdout --menu "Elegí tu red WiFi:" 18 60 12 "${MENU_ARGS[@]}")
+          if [ -n "$CHOICE" ]; then
+            SSID_ELEGIDA=$(sed -n "${CHOICE}p" /tmp/bison-wifi-list.txt)
+            CLAVE=$(dialog --clear --title " Clave WiFi " --stdout --insecure --passwordbox " Clave para $SSID_ELEGIDA:" 10 60)
+            if [ -n "$CLAVE" ]; then
+              nmcli device wifi connect "$SSID_ELEGIDA" password "$CLAVE" 2>/dev/null || true
+              sleep 3
+            fi
+          fi
+          rm -f /tmp/bison-wifi-list.txt
+        fi
+      fi
       if ! ping -c 1 -W 7 8.8.8.8 &>/dev/null || ! getent hosts archlinux.org >/dev/null 2>&1; then
-        dialog --clear --title " Sin red " --msgbox "Sigue sin conexuón a internet." 8 60
+        dialog --clear --title " Sin red " --msgbox "\nSigue sin conexión a internet." 8 60
         return 1
       fi
     else
@@ -35,7 +72,7 @@ instalar_sistema() {
   fi
 
   (
-    echo "XXX"; echo 5; echo "Detectando UEFI / BIOS..."; echo "XXX"
+    echo "XXX"; echo 5; echo "\nDetectando UEFI / BIOS..."; echo "XXX"
     sleep 1
 
     # Si booteo en UEFI Partición 2, ES_UEFI=1 aunque MODO_FIRMWARE sea legacy
@@ -46,7 +83,7 @@ instalar_sistema() {
     else
       ES_UEFI=0
     fi
-    echo "XXX"; echo 15; echo "Particionando $DISCO..."; echo "XXX"
+    echo "XXX"; echo 15; echo "\nParticionando $DISCO..."; echo "XXX"
     if [ "$MODO_PART" = "guided" ]; then
   # Guided: crear las particiones con los tamaños que eligió el usuario
   wipefs -a "$DISCO" 2>/dev/null
@@ -118,6 +155,7 @@ instalar_sistema() {
   elif [ "$MODO_PART" = "manual" ]; then
   PART_ROOT="$PART_ROOT_MANUAL"
   PART_EFI="$PART_EFI_MANUAL"
+  PART_BOOT="$PART_BOOT_MANUAL"
   [ -n "$PART_EFI" ] && mkfs.fat -F32 "$PART_EFI" >/dev/null 2>&1
     else
       wipefs -a "$DISCO" 2>/dev/null
@@ -153,9 +191,15 @@ instalar_sistema() {
         fi
       fi
     fi
-    echo "XXX"; echo 30; echo "Formateando..."; echo "XXX"
+    echo "XXX"; echo 30; echo "\n Formateando..."; echo "XXX"
     mkfs.ext4 -F "$PART_ROOT" >/dev/null 2>&1
     mount -t ext4 "$PART_ROOT" /mnt
+    # /boot separado en experto, si lo elegiste
+    if [ "$MODO_PART" = "manual" ] && [ -n "$PART_BOOT" ]; then
+      mkfs.ext4 -F "$PART_BOOT" >/dev/null 2>&1
+      mkdir -p /mnt/boot
+      mount -t ext4 "$PART_BOOT" /mnt/boot
+    fi
     if [ "$ES_UEFI" -eq 1 ] && [ -n "$PART_EFI" ]; then
       mkdir -p /mnt/boot/efi
       mkdir -p /mnt/boot/grub
@@ -171,9 +215,9 @@ instalar_sistema() {
       swapon "$PART_SWAP_MANUAL" 2>/dev/null || true
     fi
     # verificación antes de pacstrap
-    echo "XXX"; echo 38; echo "Verificando particiones y montaje..."; echo "XXX"
+    echo "XXX"; echo 38; echo "\nVerificando particiones y montaje..."; echo "XXX"
     : > /tmp/bison-verify.log
-    echo "DISCO=$DISCO PART_ROOT=$PART_ROOT PART_HOME=$PART_HOME_MANUAL PART_SWAP=$PART_SWAP_MANUAL ES_UEFI=$ES_UEFI" >> /tmp/bison-verify.log
+    echo "DISCO=$DISCO PART_ROOT=$PART_ROOT PART_BOOT=$PART_BOOT PART_HOME=$PART_HOME_MANUAL PART_SWAP=$PART_SWAP_MANUAL ES_UEFI=$ES_UEFI" >> /tmp/bison-verify.log
     echo "--- lsblk ---" >> /tmp/bison-verify.log
     lsblk -f "$DISCO" >> /tmp/bison-verify.log 2>&1
     echo "--- sfdisk --verify ---" >> /tmp/bison-verify.log
@@ -229,8 +273,25 @@ instalar_sistema() {
     # instalar con pacstrap
     echo "XXX"; echo 45; echo "\n Instalando sistema base con pacstrap..."; echo "XXX"
     mapfile -t PKGS < <(grep -v "^#" /usr/share/bison/packages.x86_64 | grep -v "^$" | tr -d '\r')
-    pacstrap -K /mnt "${PKGS[@]}" >/tmp/bison-pacstrap.log 2>&1
+    pacstrap -K /mnt "${PKGS[@]}" > /tmp/bison-pacstrap.log 2>&1 &
+    PACSTRAP_PID=$!
+    while kill -0 $PACSTRAP_PID 2>/dev/null; do
+      ULTIMA=$(tail -n 1 /tmp/bison-pacstrap.log 2>/dev/null)
+      # Buscar ( X/Y ) en el log, como ( 12/150 )
+      PROG=$(grep -o "([0-9]*/[0-9]*)" /tmp/bison-pacstrap.log 2>/dev/null | tail -n 1 | tr -d '()')
+      ACTUAL=$(echo "$PROG" | cut -d/ -f1 | tr -d ' ')
+      TOTAL_PAC=$(echo "$PROG" | cut -d/ -f2 | tr -d ' ')
+      if [ -n "$ACTUAL" ] && [ -n "$TOTAL_PAC" ] && [ "$TOTAL_PAC" -gt 0 ] 2>/dev/null; then
+        PORC=$((45 + ACTUAL * 35 / TOTAL_PAC))
+      else
+        PORC=45
+      fi
+      echo "XXX"; echo $PORC; echo "\n Instalando sistema base con pacstrap...\n\n $ULTIMA"; echo "XXX"
+      sleep 1
+    done
+    wait $PACSTRAP_PID
     PACSTRAP_RC=$?
+
     if [ $PACSTRAP_RC -ne 0 ] || [ ! -x /mnt/usr/bin/pacman ]; then
       echo "ERROR: pacstrap falló rc=$PACSTRAP_RC o falta /mnt/usr/bin/pacman" >> /tmp/bison-pacstrap.log
       touch /tmp/bison-pacstrap-failed
@@ -241,20 +302,55 @@ instalar_sistema() {
     fi
     arch-chroot /mnt systemctl enable lightdm.service >/dev/null 2>&1
 
-    # Bison: copiar tema, iconos, fondo y defaults del live al instalado
+    # copiar tema, iconos, fondo y defaults del live al instalado
     mkdir -p /mnt/usr/share/themes /mnt/usr/share/icons /mnt/usr/share/backgrounds /mnt/usr/share/bison-defaults
+    mkdir -p /mnt/etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml/ /mnt/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/
+    mkdir -p /mnt/etc/lightdm/ /mnt/usr/share/backgrounds/xfce/ /mnt/boot/grub/themes/bison/
+
     cp -a /usr/share/themes/Space-dark /mnt/usr/share/themes/ 2>/dev/null
     cp -a /usr/share/icons/besgnulinux-labile-dark-blue /mnt/usr/share/icons/ 2>/dev/null
     cp -a /usr/share/icons/SC_Cursors_Terran_Blue /mnt/usr/share/icons/ 2>/dev/null
     cp -a /usr/share/backgrounds/bison /mnt/usr/share/backgrounds/ 2>/dev/null
     cp -a /usr/share/bison-defaults/*.xml /mnt/usr/share/bison-defaults/ 2>/dev/null
     cp -a /usr/share/themes/Bison /mnt/usr/share/themes/ 2>/dev/null
-    mkdir -p /mnt/etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml/ /mnt/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/
     cp -a /usr/share/bison-defaults/*.xml /mnt/etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml/ 2>/dev/null
     cp -a /usr/share/bison-defaults/*.xml /mnt/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/ 2>/dev/null
-    cp -a /usr/share/bison-defaults/*.xml /mnt/etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml/ 2>/dev/null
-    cp -a /usr/share/bison-defaults/*.xml /mnt/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/ 2>/dev/null
+
+    # evitar launchers vacíos en el panel
+    find /mnt/etc/skel/.config/xfce4/panel/ -type f -size 0 -delete 2>/dev/null
+    rm -rf /mnt/etc/skel/.config/xfce4/panel/launcher-4 2>/dev/null
+    find /mnt/etc/xdg/xfce4/panel/ -type f -size 0 -delete 2>/dev/null
+    rm -rf /mnt/etc/xdg/xfce4/panel/launcher-4 2>/dev/null
     cp -a /etc/lightdm/lightdm-gtk-greeter.conf /mnt/etc/lightdm/lightdm-gtk-greeter.conf 2>/dev/null
+
+    # borrar cualquier GRUB_THEME previo para que no tape el menu en BIOS
+    mkdir -p /mnt/boot/grub/themes/bison
+    cp /usr/share/bison-defaults/splash-1024x768.png /mnt/boot/grub/splash.png 2>/dev/null || \
+    cp /boot/grub/themes/bison/splash.png /mnt/boot/grub/splash.png 2>/dev/null || \
+    cp /usr/share/bison-defaults/splash.png /mnt/boot/grub/splash.png 2>/dev/null || \
+    cp /boot/grub/themes/bison/splash.png /mnt/boot/grub/themes/bison/splash.png 2>/dev/null || \
+    cp /usr/share/bison-defaults/splash.png /mnt/boot/grub/themes/bison/splash.png 2>/dev/null || true
+
+    # Borrar / comentar GRUB_THEME si existia
+    sed -i 's|^GRUB_THEME=.*|#GRUB_THEME=""|' /mnt/etc/default/grub
+    sed -i 's|^#GRUB_THEME=.*|#GRUB_THEME=""|' /mnt/etc/default/grub
+    
+    sed -i 's|^#\?GRUB_BACKGROUND=.*|GRUB_BACKGROUND="/boot/grub/splash.png"|' /mnt/etc/default/grub
+    grep -q "^GRUB_BACKGROUND=" /mnt/etc/default/grub || echo 'GRUB_BACKGROUND="/boot/grub/splash.png"' >> /mnt/etc/default/grub
+    
+    sed -i 's|^#\?GRUB_GFXMODE=.*|GRUB_GFXMODE=1024x768|' /mnt/etc/default/grub
+    grep -q "^GRUB_GFXMODE=" /mnt/etc/default/grub || echo 'GRUB_GFXMODE=1024x768' >> /mnt/etc/default/grub
+
+    # Fondo Bison de entrada, en carpeta xfce y en carpeta bison (las 2, para que el xml lo encuentre)
+    mkdir -p /mnt/usr/share/backgrounds/xfce /mnt/usr/share/backgrounds/bison
+    cp /usr/share/backgrounds/bison/bison_default.jpg /mnt/usr/share/backgrounds/xfce/bison_default.jpg 2>/dev/null
+    chmod 644 /mnt/usr/share/backgrounds/xfce/bison_default.jpg 2>/dev/null
+    cp /usr/share/backgrounds/bison/bison_default.jpg /mnt/usr/share/backgrounds/bison/bison_default.jpg 2>/dev/null
+    chmod 644 /mnt/usr/share/backgrounds/bison/bison_default.jpg 2>/dev/null
+    
+    mkdir -p /mnt/usr/share/backgrounds/bison
+    cp /usr/share/backgrounds/bison/bison_default.jpg /mnt/usr/share/backgrounds/bison/bison_default.jpg 2>/dev/null
+    chmod 644 /mnt/usr/share/backgrounds/bison/bison_default.jpg 2>/dev/null
 
     echo "XXX"; echo 70; echo "Generando fstab..."; echo "XXX"
     genfstab -U /mnt >> /mnt/etc/fstab
@@ -301,7 +397,7 @@ LOGO="bison"
 OSRELEASE
     arch-chroot /mnt locale-gen >/dev/null 2>&1
     arch-chroot /mnt mkinitcpio -P >/dev/null 2>&1
-    echo "XXX"; echo 90; echo "Instalando bootloader..."; echo "XXX"
+    echo "XXX"; echo 90; echo "\n Instalando bootloader..."; echo "XXX"
     GRUB_LOG="/tmp/bison-install-grub.log"
     : > "$GRUB_LOG"
 
@@ -316,6 +412,10 @@ OSRELEASE
       # Meter Bison en grub
       sed -i 's/^GRUB_DISTRIBUTOR=.*/GRUB_DISTRIBUTOR="Bison Linux"/' /mnt/etc/default/grub
       grep -q "^GRUB_DISTRIBUTOR=" /mnt/etc/default/grub || echo 'GRUB_DISTRIBUTOR="Bison Linux"' >> /mnt/etc/default/grub
+
+      # Fondo Bison + barra en GRUB
+      sed -i 's|^#GRUB_BACKGROUND=.*|GRUB_BACKGROUND="/boot/grub/splash.png"|' /mnt/etc/default/grub
+      grep -q "^GRUB_BACKGROUND=" /mnt/etc/default/grub || echo 'GRUB_BACKGROUND="/boot/grub/splash.png"' >> /mnt/etc/default/grub
     else
       echo "WARN: /mnt/etc/default/grub no existe, grub-mkconfig usará default" >> "$GRUB_LOG"
     fi
@@ -337,7 +437,11 @@ OSRELEASE
       echo "ERROR: no se pudo crear /mnt/boot/grub" >> "$GRUB_LOG"
       touch /tmp/bison-grub-failed
     fi
-    if [ -f /usr/share/bison/splash.png ]; then
+    # Segundo bloque: no pisar el splash 1024x768 ya puesto, usar ese primero
+    if [ -f /usr/share/bison-defaults/splash-1024x768.png ]; then
+      mkdir -p /mnt/boot/grub
+      cp /usr/share/bison-defaults/splash-1024x768.png /mnt/boot/grub/splash.png
+    elif [ -f /usr/share/bison/splash.png ]; then
       mkdir -p /mnt/boot/grub
       cp /usr/share/bison/splash.png /mnt/boot/grub/splash.png
       if [ -f /mnt/etc/default/grub ]; then
@@ -383,9 +487,9 @@ OSRELEASE
     if [ -f /mnt/usr/bin/lightdm ]; then
       arch-chroot /mnt systemctl enable lightdm >/dev/null 2>&1
     fi
-    echo "XXX"; echo 100; echo "Listo!"; echo "XXX"
+    echo "XXX"; echo 100; echo "\n Listo!"; echo "XXX"
     sleep 1
-  ) | dialog --clear --title " Instalando Bison Linux... " --gauge "Preparando..." 10 70 0
+  ) | dialog --clear --title " Instalando Bison Linux... " --gauge "\n Preparando..." 10 70 0
 
   if [ -f /tmp/bison-verify-failed ]; then
     if mountpoint -q /mnt; then

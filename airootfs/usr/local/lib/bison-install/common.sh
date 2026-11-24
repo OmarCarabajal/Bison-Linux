@@ -116,7 +116,7 @@ check_cancel() {
     local OPCION
     OPCION=$(dialog --clear --title " ¿Cancelar instalación? " --stdout \
       --ok-label "Ok" --cancel-label "Atrás" --extra-button --extra-label "Cancel" \
-      --no-tags --menu "¿Seguro querés cancelar la instalación?\n\nUsá ↑ ↓ para elegir, Enter para confirmar." 16 70 2 \
+      --no-tags --menu "\n ¿Seguro querés cancelar la instalación?\n\n Usá ↑ ↓ para elegir, Enter para confirmar." 16 70 2 \
       "si" "Cancelar e ir al menú" \
       "no" "Seguir instalando")
     local rc2=$?
