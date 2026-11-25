@@ -52,6 +52,11 @@ Para instalar el gestor de energía:
 Para instalar un visor de imágenes:
 - sudo pacman -S ristretto
 
+Configuración de zona horaria:
+- sudo timedatectl set-timezone Contoinente/País/Ciudad
+- sudo timedatectl set-ntp true
+- sudo hwclock --systohc
+
 ## Capturas
 
 ### 01 - Boot
