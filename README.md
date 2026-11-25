@@ -46,6 +46,12 @@ base, linux, linux-firmware
 networkmanager, grub, efibootmgr si UEFI  
 xorg, xfce4, firefox.
 
+Para instalar el gestor de energía:
+- sudo pacman -S xfce4-power-manager
+
+Para instalar un visor de imágenes:
+- sudo pacman -S ristretto
+
 ## Capturas
 
 ### 01 - Boot
