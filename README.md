@@ -24,7 +24,7 @@ Booteá el ISO. Ejecutá:
 
 ```bash
 bison-install
-
+bison-live
 ```
 Particionamiento
 Tres modos.
